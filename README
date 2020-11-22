@@ -1,11 +1,18 @@
 st - simple terminal
 --------------------
 st is a simple terminal emulator for X which sucks less.
+This is a fork of st terminal emulator by suckless.org 
+with some modifications and patches applied.
 
 
 Requirements
 ------------
 In order to build st you need the Xlib header files.
+
+
+Applied patches
+---------------
+All applied patches are located in ./patches/ directory.
 
 
 Installation
