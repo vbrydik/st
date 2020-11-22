@@ -1,0 +1,75 @@
+From c0e83b88efab5df23930e7fa81e1cec1ae1a94a7 Mon Sep 17 00:00:00 2001
+From: vb <vb@vbrydik.xyz>
+Date: Fri, 20 Nov 2020 14:43:39 +0200
+Subject: [PATCH] Disable bold, italic, roman fonts
+
+---
+ config.def.h |  6 ++++++
+ x.c          | 19 +++++++++++++++----
+ 2 files changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 6f05dce..c96f2b2 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -6,6 +6,12 @@
+  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
+  */
+ static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
++
++/* disable bold, italic and roman fonts globally */
++int disablebold = 0;
++int disableitalic = 0;
++int disableroman = 0;
++
+ static int borderpx = 2;
+ 
+ /*
+diff --git a/x.c b/x.c
+index 120e495..f205a12 100644
+--- a/x.c
++++ b/x.c
+@@ -243,6 +243,11 @@ static char *usedfont = NULL;
+ static double usedfontsize = 0;
+ static double defaultfontsize = 0;
+ 
++/* declared in config.h */
++extern int disablebold;
++extern int disableitalic;
++extern int disableroman;
++
+ static char *opt_class = NULL;
+ static char **opt_cmd  = NULL;
+ static char *opt_embed = NULL;
+@@ -1001,18 +1006,24 @@ xloadfonts(char *fontstr, double fontsize)
+ 	win.cw = ceilf(dc.font.width * cwscale);
+ 	win.ch = ceilf(dc.font.height * chscale);
+ 
++	// Disable italics
+ 	FcPatternDel(pattern, FC_SLANT);
+-	FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
++	if (!disableitalic)
++		FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
+ 	if (xloadfont(&dc.ifont, pattern))
+ 		die("can't open font %s\n", fontstr);
+ 
++	// Disable bold
+ 	FcPatternDel(pattern, FC_WEIGHT);
+-	FcPatternAddInteger(pattern, FC_WEIGHT, FC_WEIGHT_BOLD);
++	if (!disablebold)
++		FcPatternAddInteger(pattern, FC_WEIGHT, FC_WEIGHT_BOLD);
+ 	if (xloadfont(&dc.ibfont, pattern))
+ 		die("can't open font %s\n", fontstr);
+-
++	
++	// Disable roman
+ 	FcPatternDel(pattern, FC_SLANT);
+-	FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ROMAN);
++	if (!disableroman)
++		FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ROMAN);
+ 	if (xloadfont(&dc.bfont, pattern))
+ 		die("can't open font %s\n", fontstr);
+ 
+-- 
+2.29.0
+
